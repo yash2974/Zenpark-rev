@@ -1,0 +1,3 @@
+Front end - 2 mobile apps 
+back end - ML model for lpr - ocr - rto check api - authorize/unauthorize
+qr codes
