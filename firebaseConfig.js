@@ -3,7 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAjj8PZj77e2hYRxx2eiZbnUrqJNK9aKsw",
+  apiKey: "",
   authDomain: "zenpark-feabf.firebaseapp.com",
   projectId: "zenpark-feabf",
   storageBucket: "zenpark-feabf.appspot.com",
