@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 
 const PlateDetection = () => {
-  const [plates, setPlates] = useState([]);
+  const [plates, setPlates] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,7 +15,11 @@ const PlateDetection = () => {
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      setPlates(data.plates);
+
+      // Handle single plate detection
+      if (data.plate) {
+        setPlates((prevPlates) => [...new Set([data.plate, ...prevPlates])]); // Avoid duplicates
+      }
     };
 
     socket.onerror = (error) => {
