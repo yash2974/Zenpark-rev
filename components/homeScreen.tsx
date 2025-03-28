@@ -1,11 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Profile from './profile';
 
+// Home Screen
+const HomeContent = () => (
+  <View style={styles.centerContainer}>
+    <Text style={styles.title}>Welcome to Zenpark</Text>
+  </View>
+);
+
+// Plate Detection Screen
 const PlateDetection = () => {
-  const [plates, setPlates] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [plates, setPlates] = React.useState<string[]>([]);
+  const [loading, setLoading] = React.useState(true);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const socket = new WebSocket('ws://192.168.1.6:8000/ws');
 
     socket.onopen = () => {
@@ -50,10 +61,61 @@ const PlateDetection = () => {
   );
 };
 
+// Create Bottom Tab Navigator
+const Tab = createBottomTabNavigator();
+
+// Home Screen with Bottom Tab Navigation
+const HomeScreen = () => {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName: string;
+
+          if (route.name === 'Home') {
+            iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Plates') {
+            iconName = focused ? 'car' : 'car-outline';
+          } else {
+            iconName = focused ? 'person' : 'person-outline';
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: 'tomato',
+        tabBarInactiveTintColor: 'gray',
+        headerShown: false
+      })}
+    >
+      <Tab.Screen name="Home" component={HomeContent} />
+      <Tab.Screen name="Plates" component={PlateDetection} />
+      <Tab.Screen name="Profile" component={Profile} />
+    </Tab.Navigator>
+  );
+};
+
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#f5f5f5' },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10 },
-  plate: { fontSize: 18, marginVertical: 5, color: 'green' }
+  container: { 
+    flex: 1, 
+    padding: 20, 
+    backgroundColor: '#f5f5f5' 
+  },
+  centerContainer: {
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    backgroundColor: '#f5f5f5'
+  },
+  title: { 
+    fontSize: 24, 
+    fontWeight: 'bold', 
+    marginBottom: 10 
+  },
+  plate: { 
+    fontSize: 18, 
+    marginVertical: 5, 
+    color: 'green' 
+  }
 });
 
-export default PlateDetection;
+export default HomeScreen;

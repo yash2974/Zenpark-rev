@@ -22,7 +22,7 @@ app.add_middleware(
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 # Load YOLO model
-model = YOLO("best.pt")
+model = YOLO("best-epoch100.pt")
 
 # Video source (change "0" to video path or use webcam)
 video_source = "video.mp4"
@@ -36,14 +36,14 @@ async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
 
     cap = cv2.VideoCapture(video_source)
-    
+
     if not cap.isOpened():
         print("Error: Could not open video.")
         await websocket.close()
         return
 
-    fps = int(cap.get(cv2.CAP_PROP_FPS))  # Get the FPS of the video
-    frame_skip = fps  # Skip frames to process only 1 frame per second
+    fps = int(cap.get(cv2.CAP_PROP_FPS))  # Get FPS
+    frame_skip = fps  # Process 1 frame per second
 
     frame_count = 0
     last_plate = None
@@ -68,7 +68,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
                 plate_img = frame[y1:y2, x1:x2]
 
-                if plate_img.size == 0:  # Ensure the image is valid
+                if plate_img.size == 0:
                     continue
 
                 gray = cv2.cvtColor(plate_img, cv2.COLOR_BGR2GRAY)
@@ -82,10 +82,7 @@ async def websocket_endpoint(websocket: WebSocket):
                     last_plate = number
                     plate_detected = True
 
-                    # Draw rectangle around the plate
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-
-                    # Send only one plate at a time
+                    # Send plate data over WebSocket
                     await websocket.send_json({"plate": number})
                     print(f"Detected: {number}")
                     break
