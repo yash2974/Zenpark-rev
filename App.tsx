@@ -6,9 +6,11 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from './firebaseConfig';  // Import auth from the config
 
 
+
 import Slider from './components/Slider';  // Your Slider screen
 import loginScreen from './components/loginScreen';    // Your Login screen
 import HomeScreen from './components/homeScreen';    // Your Home screen
+import SignupScreen from './components/signupScreen';  // Your Signup screen
 
 const Stack = createStackNavigator();
 const AuthStack = createStackNavigator();
@@ -18,6 +20,7 @@ const AuthStackScreen = () => (
   <AuthStack.Navigator screenOptions={{ headerShown: false }}>
     <AuthStack.Screen name="Slider" component={Slider} />
     <AuthStack.Screen name="loginScreen" component={loginScreen} />
+    <AuthStack.Screen name="SignupScreen" component={SignupScreen} />
   </AuthStack.Navigator>
 );
 

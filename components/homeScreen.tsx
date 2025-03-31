@@ -1,15 +1,12 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator ,Button} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Profile from './profile';
+import HomeContent from './homeContent';
 
 // Home Screen
-const HomeContent = () => (
-  <View style={styles.centerContainer}>
-    <Text style={styles.title}>Welcome to Zenpark</Text>
-  </View>
-);
+
 
 // Plate Detection Screen
 const PlateDetection = () => {

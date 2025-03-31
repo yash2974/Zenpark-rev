@@ -4,7 +4,7 @@ import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } f
 
 
 
-const loginScreen = () => {
+const loginScreen = ({ navigation }: { navigation: any }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -47,7 +47,7 @@ const loginScreen = () => {
                 secureTextEntry
             />
             <Button title="Login" onPress={handleLogin} />
-            <Button title="Sign Up" onPress={handleSignUp} />
+            <Button title="Sign Up" onPress={() => navigation.navigate('SignupScreen')} />
         </View>
     );
 };
