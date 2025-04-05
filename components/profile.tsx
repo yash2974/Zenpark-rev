@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Button } from 'react-native';
+import { signOut ,getAuth} from 'firebase/auth';
 
 type UserData = {
   name?: string;
@@ -10,46 +10,119 @@ type UserData = {
   [key: string]: any; // For any other fields in userData
 };
 
-const Profile = () => {
-  const route = useRoute();
-  const userData = route.params?.userData as UserData || {};
+const auth = getAuth();
+const handleSignout = async () => {
+  try {
+    await signOut(auth);
+    console.log('User signed out successfully');
+  } catch (error) {
+    console.error('Error signing out:', error);
+  }
+}
+interface ProfileProps {
+  userData: UserData | null;
+}
 
-  const renderUserInfo = () => {
-    if (!userData || Object.keys(userData).length === 0) {
-      return <Text style={styles.noData}>No user data available</Text>;
-    }
-
-    return Object.entries(userData).map(([key, value]) => {
-      // Skip rendering null, undefined or empty values
-      if (value === null || value === undefined || value === '') return null;
-      
-      // Format the key for display (capitalize first letter)
-      const formattedKey = key.charAt(0).toUpperCase() + key.slice(1);
-      
-      return (
-        <View style={styles.infoRow} key={key}>
-          <Text style={styles.infoLabel}>{formattedKey}:</Text>
-          <Text style={styles.infoValue}>{String(value)}</Text>
-        </View>
-      );
-    });
-  };
+const Profile: React.FC<ProfileProps> = ({ userData }) => {
+  // Show loading indicator while data is being fetched
+  if (!userData) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>User Profile</Text>
       </View>
-      <View style={styles.userInfoContainer}>
-        {renderUserInfo()}
+      
+      {/* User basic information */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Personal Information</Text>
+        
+        {/* Show name if available */}
+        {userData.name && (
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Name:</Text>
+            <Text style={styles.infoValue}>{userData.name}</Text>
+          </View>
+        )}
+        
+        {/* Show email if available */}
+        {userData.email && (
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Email:</Text>
+            <Text style={styles.infoValue}>{userData.email}</Text>
+          </View>
+        )}
+        
+        {/* Show phone if available */}
+        {userData.contact && (
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Phone:</Text>
+            <Text style={styles.infoValue}>{userData.contact}</Text>
+          </View>
+        )}
+        
+        {/* Show address if available */}
+        {userData.organization && (
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Organization:</Text>
+            <Text style={styles.infoValue}>{userData.organization}</Text>
+          </View>
+        )}
+
+        {userData.registration && (
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Registration:</Text>
+            <Text style={styles.infoValue}>{userData.registration}</Text>
+          </View>
+        )}
+
+        {userData.vehicle && (
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Vehicle:</Text>
+            <Text style={styles.infoValue}>{userData.vehicle}</Text>
+          </View>
+        )}
       </View>
+      
+      {/* You can add more sections for other user data */}
+      {/* For example, if you have additional data like user preferences */}
+      {/* 
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Preferences</Text>
+        {userData.preferences && (
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Theme:</Text>
+            <Text style={styles.infoValue}>{userData.preferences.theme}</Text>
+          </View>
+        )}
+      </View>
+      */}
+      
+      {/* No data message if all main fields are empty */}
+      {!userData.name && !userData.email && !userData.phone && !userData.address && (
+        <Text style={styles.noData}>No user data available</Text>
+      )}
+      <Button title="Log Out" onPress={handleSignout}/>
     </ScrollView>
+    
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: '#f5f5f5',
   },
   header: {
@@ -63,7 +136,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
-  userInfoContainer: {
+  section: {
     backgroundColor: '#fff',
     margin: 10,
     borderRadius: 10,
@@ -73,6 +146,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 2,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    paddingBottom: 5,
   },
   infoRow: {
     flexDirection: 'row',
