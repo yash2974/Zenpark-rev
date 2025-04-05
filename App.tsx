@@ -3,14 +3,12 @@ import { View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from './firebaseConfig';  // Import auth from the config
+import { auth } from './firebaseConfig';
 
-
-
-import Slider from './components/Slider';  // Your Slider screen
-import loginScreen from './components/loginScreen';    // Your Login screen
-import HomeScreen from './components/homeScreen';    // Your Home screen
-import SignupScreen from './components/signupScreen';  // Your Signup screen
+import Slider from './components/Slider';
+import loginScreen from './components/loginScreen';
+import HomeScreen from './components/homeScreen';
+import SignupScreen from './components/signupScreen';
 
 const Stack = createStackNavigator();
 const AuthStack = createStackNavigator();
@@ -24,20 +22,35 @@ const AuthStackScreen = () => (
   </AuthStack.Navigator>
 );
 
-const HomeStackScreen = () => (
+const HomeStackScreen = ({ userData }) => (
   <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-    <HomeStack.Screen name="HomeScreen" component={HomeScreen} />
+    <HomeStack.Screen name="HomeScreen">
+      {(props) => <HomeScreen {...props} userData={userData} />}
+    </HomeStack.Screen>
   </HomeStack.Navigator>
 );
-
 
 function App(): React.JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsLoggedIn(!!user);
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setIsLoggedIn(true);
+        try {
+          const response = await fetch(`http://192.168.1.6:8001/user/${user.uid}`);
+          const data = await response.json();
+          console.log("User data fetched in App:", data);
+          setUserData(data);
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      } else {
+        setIsLoggedIn(false);
+        setUserData(null);
+      }
       setIsLoading(false);
     });
 
@@ -56,7 +69,9 @@ function App(): React.JSX.Element {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {isLoggedIn ? (
-          <Stack.Screen name="HomeStack" component={HomeStackScreen} />
+          <Stack.Screen name="HomeStack">
+            {() => <HomeStackScreen userData={userData} />}
+          </Stack.Screen>
         ) : (
           <Stack.Screen name="AuthStack" component={AuthStackScreen} />
         )}
