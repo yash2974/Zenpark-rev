@@ -4,6 +4,7 @@ import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } f
 
 
 
+
 const loginScreen = ({ navigation }: { navigation: any }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -14,19 +15,11 @@ const loginScreen = ({ navigation }: { navigation: any }) => {
             await signInWithEmailAndPassword(authentication, email, password);
             Alert.alert('Success', 'You are logged in!');
         } catch (error) {
-            Alert.alert('Error', error.message);
+            Alert.alert('Error', (error as any).message);
         }
     };
     
-    const handleSignUp = async () => {
-        const authentication = getAuth();
-        try {
-            await createUserWithEmailAndPassword(authentication, email, password);
-            Alert.alert('Success', 'Account created!');
-        } catch (error) {
-            Alert.alert('Error', error.message);
-        }
-    };
+    
 
     return (
         <View style={styles.container}>

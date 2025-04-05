@@ -1,20 +1,23 @@
 // firebaseConfig.js
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAjj8PZj77e2hYRxx2eiZbnUrqJNK9aKsw",
-  authDomain: "zenpark-feabf.firebaseapp.com",
-  projectId: "zenpark-feabf",
-  storageBucket: "zenpark-feabf.appspot.com",
-  messagingSenderId: "664418493611",
-  appId: "1:664418493611:web:a3cb973f4235c2131343ee",
-  measurementId: "G-KSHQWX5NS2"
+  apiKey: "AIzaSyBwBk72y3xIXUKNGqJzF_VLQADEzSNgBMQ",
+  authDomain: "zenpark-28d15.firebaseapp.com",
+  projectId: "zenpark-28d15",
+  storageBucket: "zenpark-28d15.firebasestorage.app",
+  messagingSenderId: "248113294350",
+  appId: "1:248113294350:web:729e6e9aa97d0f15afe05f",
+  measurementId: "G-B2B52N95QS"
 };
 
 // Initialize Firebase only once
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+});
 
 export { app, auth };

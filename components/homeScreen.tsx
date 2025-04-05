@@ -1,19 +1,19 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator ,Button} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Profile from './profile';
+import { getAuth } from 'firebase/auth';
 import HomeContent from './homeContent';
+import Profile from './profile';
 
-// Home Screen
+const auth = getAuth();
+const Tab = createBottomTabNavigator();
 
-
-// Plate Detection Screen
 const PlateDetection = () => {
-  const [plates, setPlates] = React.useState<string[]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const [plates, setPlates] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const socket = new WebSocket('ws://192.168.1.6:8000/ws');
 
     socket.onopen = () => {
@@ -23,20 +23,13 @@ const PlateDetection = () => {
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-
-      // Handle single plate detection
       if (data.plate) {
-        setPlates((prevPlates) => [...new Set([data.plate, ...prevPlates])]); // Avoid duplicates
+        setPlates((prev) => [...new Set([data.plate, ...prev])]);
       }
     };
 
-    socket.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-
-    socket.onclose = () => {
-      console.log('WebSocket disconnected');
-    };
+    socket.onerror = (error) => console.error('WebSocket error:', error);
+    socket.onclose = () => console.log('WebSocket disconnected');
 
     return () => socket.close();
   }, []);
@@ -58,30 +51,41 @@ const PlateDetection = () => {
   );
 };
 
-// Create Bottom Tab Navigator
-const Tab = createBottomTabNavigator();
-
-// Home Screen with Bottom Tab Navigation
 const HomeScreen = () => {
+
+  const [userData, setUserData] = useState(null);
+  const uid = auth.currentUser?.uid;
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(`http://192.168.1.6:8001/user/${uid}`);
+        const data = await response.json();
+        console.log("User data:", data);
+        setUserData(data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    if (uid) fetchUserData();
+  }, [uid]);
+  
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName: string;
+          let iconName = '';
 
-          if (route.name === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Plates') {
-            iconName = focused ? 'car' : 'car-outline';
-          } else {
-            iconName = focused ? 'person' : 'person-outline';
-          }
+          if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
+          else if (route.name === 'Plates') iconName = focused ? 'car' : 'car-outline';
+          else iconName = focused ? 'person' : 'person-outline';
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: 'tomato',
         tabBarInactiveTintColor: 'gray',
-        headerShown: false
+        headerShown: false,
       })}
     >
       <Tab.Screen name="Home" component={HomeContent} />
@@ -92,27 +96,21 @@ const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    padding: 20, 
-    backgroundColor: '#f5f5f5' 
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f5f5f5',
   },
-  centerContainer: {
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    backgroundColor: '#f5f5f5'
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
-  title: { 
-    fontSize: 24, 
-    fontWeight: 'bold', 
-    marginBottom: 10 
+  plate: {
+    fontSize: 18,
+    marginVertical: 5,
+    color: 'green',
   },
-  plate: { 
-    fontSize: 18, 
-    marginVertical: 5, 
-    color: 'green' 
-  }
 });
 
 export default HomeScreen;
