@@ -1,5 +1,5 @@
-sql queries both roles
-vehicle registration/user regstration
+sql queries both roles (this)
+vehicle registration/user regstration (this)
 rto check api 
 parking availability + map
 qr codes with payment
