@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from './firebaseConfig';
-
+import Approvals from './components/approvals';
 import Slider from './components/Slider';
 import loginScreen from './components/loginScreen';
 import HomeScreen from './components/homeScreen';
@@ -27,6 +27,7 @@ const HomeStackScreen = ({ userData }) => (
     <HomeStack.Screen name="HomeScreen">
       {(props) => <HomeScreen {...props} userData={userData} />}
     </HomeStack.Screen>
+    <HomeStack.Screen name="Approvals" component={Approvals} />
   </HomeStack.Navigator>
 );
 

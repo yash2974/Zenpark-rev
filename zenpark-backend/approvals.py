@@ -8,7 +8,6 @@ import os
 load_dotenv()
 app = FastAPI()
 
-# CORS for React
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Update with your React app URL in production
@@ -17,16 +16,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# MongoDB connection
 client = AsyncIOMotorClient(os.getenv("MONGO_URI"))
 db = client["zenparkdb"]
-collection = db["users"]
+collection = db["userrequests"]
 
-@app.get("/user/{uid}")
-async def get_user_by_uid(uid: str):
-    print("Querying for UID:", uid)
-    user = await collection.find_one({"uid": uid})
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    user["_id"] = str(user["_id"])
-    return user
+@app.get("/pending-approvals")
+async def get_pending_approvals(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+):
+    skip = (page - 1) * limit
+    approvals = await collection.find().skip(skip).limit(limit).to_list(length=limit)
+    
+    for approval in approvals:
+        approval["_id"] = str(approval["_id"])
+    
+    return {
+        "approvals": approvals,
+        "page": page,
+        "limit": limit,
+        "total": await collection.count_documents({}),
+    }

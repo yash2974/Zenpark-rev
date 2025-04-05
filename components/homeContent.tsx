@@ -1,6 +1,7 @@
-import React from "react";
-import { Text, View ,Button,StyleSheet} from "react-native";
+import React, { useState } from "react";
+import { Text, View , Button, StyleSheet} from "react-native";
 import { auth } from '../firebaseConfig'; // Import auth from the config
+
 
 const user = auth.currentUser;
 if (user) {
@@ -8,17 +9,23 @@ if (user) {
 } else {
   console.log("No user is signed in");
 }
-const HomeContent = () => (
+export default function HomeContent ({ navigation }: { navigation: any }){ 
+  
+  return(
   <View style={styles.centerContainer}>
 
-    <Text style={styles.title}>Welcome to Zenpark {user ? `, ${user.uid}` : ""}</Text>
+    <Text style={styles.title}>Welcome to Zenpark</Text>
 
     <Button
       title="Scan QR Code"
       />
     <Button title="Pre Approve"/>
+    <Button title="Approvals" onPress={() => navigation.navigate('Approvals')} />
+
+      
   </View>
-);
+  );
+};
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
@@ -43,4 +50,3 @@ const styles = StyleSheet.create({
   }
 });
 
-export default HomeContent;
