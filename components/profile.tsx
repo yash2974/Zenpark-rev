@@ -6,7 +6,6 @@ type UserData = {
   name?: string;
   email?: string;
   phone?: string;
-  address?: string;
   [key: string]: any; // For any other fields in userData
 };
 
@@ -24,6 +23,7 @@ interface ProfileProps {
 }
 
 const Profile: React.FC<ProfileProps> = ({ userData }) => {
+  console.log("User data in Profile component:", userData);
   // Show loading indicator while data is being fetched
   if (!userData) {
     return (
@@ -60,10 +60,10 @@ const Profile: React.FC<ProfileProps> = ({ userData }) => {
         )}
         
         {/* Show phone if available */}
-        {userData.contact && (
+        {userData.mobileNumber && (
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Phone:</Text>
-            <Text style={styles.infoValue}>{userData.contact}</Text>
+            <Text style={styles.infoValue}>{userData.mobileNumber}</Text>
           </View>
         )}
         
@@ -75,10 +75,10 @@ const Profile: React.FC<ProfileProps> = ({ userData }) => {
           </View>
         )}
 
-        {userData.registration && (
+        {userData.registrationNumber && (
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Registration:</Text>
-            <Text style={styles.infoValue}>{userData.registration}</Text>
+            <Text style={styles.infoValue}>{userData.registrationNumber}</Text>
           </View>
         )}
 

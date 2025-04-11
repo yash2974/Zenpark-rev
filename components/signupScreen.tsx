@@ -1,5 +1,6 @@
 import React from "react";
 import { Text, View, Button, StyleSheet, Alert, TextInput } from "react-native";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 export default function SignupScreen() {
     const [email, setEmail] = React.useState("");
@@ -8,10 +9,28 @@ export default function SignupScreen() {
     const [Organization, setOrganization] = React.useState("");
     const [RegistrationNumber, setRegistrationNumber] = React.useState("");
     const [MobileNumber, setMobileNumber] = React.useState("");
+    const [confirmPassword, setConfirmPassword] = React.useState("");
+    const [status, setStatus] = React.useState(false);
+    const [Vehicle, setVehicle] = React.useState([]);
 
 
     const handleSignUp = async () => {
         console.log("Sign Up button pressed");
+        if (password !== confirmPassword) {
+            Alert.alert("Error", "Passwords do not match!");
+            return;
+        }
+        const auth = getAuth();
+        try {
+            await createUserWithEmailAndPassword(auth, email, password);
+            console.log("User registered successfully");
+        }
+        catch (error) {
+            console.error("Error registering user:", error);
+            Alert.alert("Error", (error as any).message);
+        }
+        const uid = auth.currentUser?.uid;
+
         // need to send all the data to mongodb
         if (!email || !password || !Name || !Organization || !RegistrationNumber || !MobileNumber) {
             Alert.alert("Error", "All fields are required!");
@@ -26,12 +45,15 @@ export default function SignupScreen() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
+                    uid: uid,
                     name: Name,
-                    organization: Organization,
-                    registrationNumber: RegistrationNumber,
                     mobileNumber: MobileNumber,
+                    organization: Organization,
+                    vehicle: Vehicle,
+                    admin: false,
+                    registrationNumber: RegistrationNumber,
                     email,
-                    password,
+                    status
                 }),
 
             });
@@ -100,8 +122,8 @@ export default function SignupScreen() {
               <TextInput
                     style={styles.input}
                     placeholder="Confirm Password"
-                    value={password}
-                    onChangeText={setPassword}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
                     secureTextEntry
             />
               

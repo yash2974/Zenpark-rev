@@ -6,7 +6,7 @@ const PlateDetection = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const socket = new WebSocket('ws://192.168.1.6:8000/ws');
+    const socket = new WebSocket('ws://192.168.1.4:8002/ws');
 
     socket.onopen = () => {
       console.log('Connected to FastAPI WebSocket');

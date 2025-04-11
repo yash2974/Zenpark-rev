@@ -22,7 +22,11 @@ const AuthStackScreen = () => (
   </AuthStack.Navigator>
 );
 
-const HomeStackScreen = ({ userData }) => (
+interface HomeStackScreenProps {
+  userData: any; 
+}
+
+const HomeStackScreen = ({ userData }: HomeStackScreenProps) => (
   <HomeStack.Navigator screenOptions={{ headerShown: false }}>
     <HomeStack.Screen name="HomeScreen">
       {(props) => <HomeScreen {...props} userData={userData} />}
@@ -41,7 +45,7 @@ function App(): React.JSX.Element {
       if (user) {
         setIsLoggedIn(true);
         try {
-          const response = await fetch(`http://192.168.1.6:8001/user/${user.uid}`);
+          const response = await fetch(`http://192.168.1.4:8001/user/${user.uid}`);
           const data = await response.json();
           console.log("User data fetched in App:", data);
           setUserData(data);
