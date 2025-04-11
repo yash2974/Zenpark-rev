@@ -9,6 +9,7 @@ import Slider from './components/Slider';
 import loginScreen from './components/loginScreen';
 import HomeScreen from './components/homeScreen';
 import SignupScreen from './components/signupScreen';
+import AddVehicle from './components/addVehicle';
 
 const Stack = createStackNavigator();
 const AuthStack = createStackNavigator();
@@ -32,6 +33,7 @@ const HomeStackScreen = ({ userData }: HomeStackScreenProps) => (
       {(props) => <HomeScreen {...props} userData={userData} />}
     </HomeStack.Screen>
     <HomeStack.Screen name="Approvals" component={Approvals} />
+    <HomeStack.Screen name="AddVehicle" component={AddVehicle} />
   </HomeStack.Navigator>
 );
 
@@ -45,7 +47,7 @@ function App(): React.JSX.Element {
       if (user) {
         setIsLoggedIn(true);
         try {
-          const response = await fetch(`http://192.168.1.4:8001/user/${user.uid}`);
+          const response = await fetch(`http://192.168.1.7:8001/user/${user.uid}`);
           const data = await response.json();
           console.log("User data fetched in App:", data);
           setUserData(data);

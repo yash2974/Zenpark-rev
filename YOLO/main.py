@@ -6,6 +6,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from ultralytics import YOLO
 import asyncio
+import re
 
 app = FastAPI()
 
@@ -25,7 +26,7 @@ model = YOLO("best-epoch100.pt")
 reader = easyocr.Reader(['en'])
 
 # Video source
-video_source = "Timeline 1.mp4"
+video_source = "carLicence4.mp4"
 
 @app.get("/")
 async def home():
@@ -43,10 +44,13 @@ async def websocket_endpoint(websocket: WebSocket):
         return
 
     fps = int(cap.get(cv2.CAP_PROP_FPS))  
-    frame_skip = fps * 8  # Run YOLO every 8 seconds
+    frame_skip = fps   # Run YOLO every second
 
     frame_count = 0
     last_plate = None
+    
+    # Set confidence threshold to 0.7
+    confidence_threshold = 0.7
 
     try:
         while cap.isOpened():
@@ -69,9 +73,6 @@ async def websocket_endpoint(websocket: WebSocket):
 
                 if plate_img.size == 0:
                     continue
-                
-                
-
 
                 # Convert plate to RGB for EasyOCR
                 plate_rgb = cv2.cvtColor(plate_img, cv2.COLOR_BGR2RGB)
@@ -80,21 +81,24 @@ async def websocket_endpoint(websocket: WebSocket):
                 ocr_results = reader.readtext(plate_rgb)
 
                 for bbox, text, conf in ocr_results:
-                    number = text.strip().upper()
+                    # Only process results with confidence greater than threshold
+                    if conf >= confidence_threshold:
+                        # Remove any character that's not a digit or uppercase letter
+                        cleaned_text = re.sub(r'[^0-9A-Z]', '', text.strip().upper())
+                        
+                        if cleaned_text and len(cleaned_text) >= 6 and cleaned_text != last_plate:
+                            last_plate = cleaned_text
+                            plate_detected = True
 
-                    if number and len(number) >= 6 and number != last_plate:
-                        last_plate = number
-                        plate_detected = True
-
-                        await websocket.send_json({"plate": number})
-                        print(f"Detected: {number}")
-                        break
+                            await websocket.send_json({"plate": cleaned_text, "confidence": float(conf)})
+                            print(f"Detected: {cleaned_text} (confidence: {conf:.2f})")
+                            break
 
                 if plate_detected:
                     break
 
             if not plate_detected:
-                print("No plates detected in this frame")
+                print("No plates detected in this frame with confidence >= 0.7")
 
             await asyncio.sleep(0.1)
 

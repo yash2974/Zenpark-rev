@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Button } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Button, TouchableOpacity } from 'react-native';
 import { signOut ,getAuth} from 'firebase/auth';
+import { useNavigation } from '@react-navigation/native';
+
 
 type UserData = {
   name?: string;
@@ -23,6 +25,8 @@ interface ProfileProps {
 }
 
 const Profile: React.FC<ProfileProps> = ({ userData }) => {
+  const navigation = useNavigation();
+
   console.log("User data in Profile component:", userData);
   // Show loading indicator while data is being fetched
   if (!userData) {
@@ -82,12 +86,17 @@ const Profile: React.FC<ProfileProps> = ({ userData }) => {
           </View>
         )}
 
-        {userData.vehicle && (
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Vehicle:</Text>
-            <Text style={styles.infoValue}>{userData.vehicle}</Text>
-          </View>
-        )}
+<View style={styles.section}>
+  <Text style={styles.infoLabel}>Vehicle</Text>
+  <Text style={styles.infoValue}>{userData.vehicle || 'Not added'}</Text>
+  <View style={{ marginTop: 12 }}>
+  <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AddVehicle')}>
+    <Text style={styles.buttonText}>Add Vehicle</Text>
+  </TouchableOpacity>
+
+  </View>
+</View>
+
       </View>
       
       {/* You can add more sections for other user data */}
@@ -108,7 +117,10 @@ const Profile: React.FC<ProfileProps> = ({ userData }) => {
       {!userData.name && !userData.email && !userData.phone && !userData.address && (
         <Text style={styles.noData}>No user data available</Text>
       )}
-      <Button title="Log Out" onPress={handleSignout}/>
+      <TouchableOpacity style={styles.button} onPress={handleSignout}>
+        <Text style={styles.buttonText}>Log Out</Text>
+      </TouchableOpacity>
+
     </ScrollView>
     
   );
@@ -117,65 +129,89 @@ const Profile: React.FC<ProfileProps> = ({ userData }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#0A0F1F', // soft dark navy
+    paddingHorizontal: 16,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#0A0F1F',
   },
   header: {
-    padding: 20,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    paddingVertical: 20,
     alignItems: 'center',
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#1E2A38',
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    letterSpacing: 0.8,
   },
   section: {
-    backgroundColor: '#fff',
-    margin: 10,
-    borderRadius: 10,
-    padding: 15,
+    backgroundColor: '#111827', // deep gray-blue
+    marginVertical: 12,
+    borderRadius: 14,
+    padding: 18,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 4,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
+    color: '#00B8D4',
     marginBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-    paddingBottom: 5,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   infoRow: {
-    flexDirection: 'row',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    marginBottom: 14,
   },
   infoLabel: {
-    fontWeight: 'bold',
-    width: '30%',
-    fontSize: 16,
+    color: '#CCCCCC',
+    fontSize: 14,
+    marginBottom: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 0.7,
   },
   infoValue: {
-    width: '70%',
     fontSize: 16,
+    color: '#F0F9FF',
+    fontWeight: '500',
   },
   noData: {
     textAlign: 'center',
-    fontSize: 16,
-    color: '#888',
-    padding: 20,
+    fontSize: 15,
+    color: '#999999',
+    marginTop: 20,
   },
+  button: {
+    backgroundColor: '#00B8D4',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 16,
+    shadowColor: '#00B8D4',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  
 });
+
+
 
 export default Profile;

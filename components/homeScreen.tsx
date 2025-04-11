@@ -29,20 +29,33 @@ const HomeScreen = ({ userData }: { userData: UserData | null }) => {
     if ((userData?.admin)==false) {
       return (
         <Tab.Navigator
-          screenOptions={({ route }) => ({
-            tabBarIcon: ({ focused, color, size }) => {
-              let iconName = '';
-    
-              if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
-              else if (route.name === 'History') iconName = focused ? 'car' : 'car-outline';
-              else iconName = focused ? 'person' : 'person-outline';
-    
-              return <Ionicons name={iconName} size={size} color={color} />;
-            },
-            tabBarActiveTintColor: 'tomato',
-            tabBarInactiveTintColor: 'gray',
-            headerShown: false,
-          })}
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName = '';
+        
+            if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
+            else if (route.name === 'History' || route.name === 'Plates') iconName = focused ? 'car' : 'car-outline';
+            else iconName = focused ? 'person' : 'person-outline';
+        
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarStyle: {
+            backgroundColor: '#0A0F1F',
+            borderTopWidth: 0,
+            height: 60,
+            paddingBottom: 6,
+            paddingTop: 4,
+          },
+          tabBarActiveTintColor: '#00B8D4',
+          tabBarInactiveTintColor: '#8A9BA8',
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontWeight: '600',
+            paddingBottom: 4,
+          },
+          headerShown: false,
+        })}
+        
         >
           <Tab.Screen name="Home" component={HomeContentNonAdmin} />
           <Tab.Screen name="History" component={UserHistory} />
@@ -55,20 +68,33 @@ const HomeScreen = ({ userData }: { userData: UserData | null }) => {
     else{
     return (
       <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName = '';
-
-            if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
-            else if (route.name === 'Plates') iconName = focused ? 'car' : 'car-outline';
-            else iconName = focused ? 'person' : 'person-outline';
-
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: 'tomato',
-          tabBarInactiveTintColor: 'gray',
-          headerShown: false,
-        })}
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName = '';
+      
+          if (route.name === 'Home') iconName = focused ? 'home' : 'home-outline';
+          else if (route.name === 'History' || route.name === 'Plates') iconName = focused ? 'car' : 'car-outline';
+          else iconName = focused ? 'person' : 'person-outline';
+      
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        tabBarStyle: {
+          backgroundColor: '#0A0F1F',
+          borderTopWidth: 0,
+          height: 60,
+          paddingBottom: 6,
+          paddingTop: 4,
+        },
+        tabBarActiveTintColor: '#00B8D4',
+        tabBarInactiveTintColor: '#8A9BA8',
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '600',
+          paddingBottom: 4,
+        },
+        headerShown: false,
+      })}
+      
       >
         <Tab.Screen name="Home" component={HomeContent} />
         <Tab.Screen name="Plates" component={PlateDetection} />
