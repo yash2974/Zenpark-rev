@@ -74,10 +74,10 @@ async def plate_detection_loop():
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
-            print("🎬 Video has ended. Shutting down server...")
-            cap.release()
-            db.close()
-            os._exit(0)  # Forcefully stop the server
+            print("🔄 Video ended. Rewinding to start...")
+            cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            frame_count = 0
+            continue
 
         frame_count += 1
         if frame_count % frame_skip != 0:
