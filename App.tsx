@@ -10,6 +10,7 @@ import loginScreen from './components/loginScreen';
 import HomeScreen from './components/homeScreen';
 import SignupScreen from './components/signupScreen';
 import AddVehicle from './components/addVehicle';
+import VehicleApprovals from './components/vehicleApprovals';
 
 const Stack = createStackNavigator();
 const AuthStack = createStackNavigator();
@@ -33,6 +34,7 @@ const HomeStackScreen = ({ userData }: HomeStackScreenProps) => (
       {(props) => <HomeScreen {...props} userData={userData} />}
     </HomeStack.Screen>
     <HomeStack.Screen name="Approvals" component={Approvals} />
+    <HomeStack.Screen name="VehicleApprovals" component={VehicleApprovals} />
     <HomeStack.Screen name="AddVehicle" component={AddVehicle} />
   </HomeStack.Navigator>
 );

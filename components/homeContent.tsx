@@ -19,8 +19,8 @@ export default function HomeContent ({ navigation }: { navigation: any }){
     <Button
       title="Scan QR Code"
       />
-    <Button title="Pre Approve"/>
-    <Button title="Approvals" onPress={() => navigation.navigate('Approvals')} />
+    <Button title="Vehicle Approals" onPress={() => navigation.navigate('VehicleApprovals')} />
+    <Button title="User Approvals" onPress={() => navigation.navigate('Approvals')} />
 
       
   </View>

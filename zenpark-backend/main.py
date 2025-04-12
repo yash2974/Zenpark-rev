@@ -6,9 +6,21 @@ from typing import List
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 import os
-
+import mysql.connector
 load_dotenv()
 app = FastAPI()
+
+mysql_conn = mysql.connector.connect(
+    host=os.getenv("MYSQL_HOST"),
+    user=os.getenv("MYSQL_USER"),
+    password=os.getenv("MYSQL_PASSWORD"),
+    database=os.getenv("MYSQL_DATABASE")
+)
+mysql_cursor = mysql_conn.cursor()
+
+
+
+
 
 # CORS settings
 app.add_middleware(
@@ -24,6 +36,7 @@ client = AsyncIOMotorClient(os.getenv("MONGO_URI"))
 db = client["zenparkdb"]
 users_collection = db["users"]
 requests_collection = db["userrequests"]
+vehicles_collection = db["vehicleapprovalrequests"]
 
 # ---------------------- Routes ----------------------
 
@@ -100,3 +113,107 @@ async def reject_user(_id: str):
     await requests_collection.delete_one({"_id": ObjectId(_id)})
     
     return {"message": "User rejected successfully"}
+
+
+class VehicleRegisterRequest(BaseModel):
+    vehicle_number: str
+    rc_number: str
+    license_number: str
+    vehicle_type: str
+
+
+@app.post("/register-vehicle/{uid}")
+async def register_vehicle(uid: str, payload: VehicleRegisterRequest):
+    user = await users_collection.find_one({"uid": uid})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Fix: Check if this vehicle is already registered (approved)
+    # Since vehicle is stored as strings, directly check if the vehicle number exists in the array
+    vehicle_list = user.get("vehicle", [])
+    if payload.vehicle_number in vehicle_list:
+        raise HTTPException(status_code=400, detail="Vehicle already approved and registered.")
+
+    # Check if it's already in the unapproved collection
+    duplicate = await vehicles_collection.find_one({
+        "uid": uid,
+        "vehicle_number": payload.vehicle_number
+    })
+    if duplicate:
+        raise HTTPException(status_code=400, detail="Vehicle is already pending approval.")
+
+    # Save to unapproved vehicles
+    await vehicles_collection.insert_one({
+        "uid": uid,
+        **payload.dict()
+    })
+
+    return {"message": "Vehicle submitted for approval"}
+
+@app.get("/unapproved-vehicles")
+async def get_unapproved_vehicles(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+):
+    skip = (page - 1) * limit
+    vehicles = await vehicles_collection.find().skip(skip).limit(limit).to_list(length=limit)
+    for vehicle in vehicles:
+        vehicle["_id"] = str(vehicle["_id"])
+    total = await vehicles_collection.count_documents({})
+    return {"vehicles": vehicles, "page": page, "limit": limit, "total": total}
+
+@app.post("/approve-vehicle/{_id}")
+async def approve_vehicle(_id: str):
+    if not ObjectId.is_valid(_id):
+        raise HTTPException(status_code=400, detail="Invalid vehicle ID")
+    
+    vehicle = await vehicles_collection.find_one({"_id": ObjectId(_id)})
+    if not vehicle:
+        raise HTTPException(status_code=404, detail="Vehicle not found")
+
+    user = await users_collection.find_one({"uid": vehicle["uid"]})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Add vehicle to user's approved list in MongoDB
+    await users_collection.update_one(
+        {"uid": vehicle["uid"]},
+        {"$push": {"vehicle": vehicle["vehicle_number"]}}
+    )
+
+    # Insert into MySQL
+    try:
+        insert_query = """
+        INSERT INTO approved_vehicles (uid, vehicle_number, rc_number, license_number, vehicle_type)
+        VALUES (%s, %s, %s, %s, %s)
+        """
+        mysql_cursor.execute(insert_query, (
+            vehicle["uid"],
+            vehicle["vehicle_number"],
+            vehicle["rc_number"],
+            vehicle["license_number"],
+            vehicle["vehicle_type"]
+        ))
+        mysql_conn.commit()
+    except mysql.connector.Error as err:
+        raise HTTPException(status_code=500, detail=f"MySQL Error: {err}")
+
+    # Remove from pending collection
+    await vehicles_collection.delete_one({"_id": ObjectId(_id)})
+
+    return {"message": "Vehicle approved successfully"}
+
+
+@app.post("/reject-vehicle/{_id}")
+async def reject_vehicle(_id: str):
+    if not ObjectId.is_valid(_id):
+        raise HTTPException(status_code=400, detail="Invalid vehicle ID")
+    
+    vehicle = await vehicles_collection.find_one({"_id": ObjectId(_id)})
+    if not vehicle:
+        raise HTTPException(status_code=404, detail="Vehicle not found")
+    
+    await vehicles_collection.delete_one({"_id": ObjectId(_id)})
+    
+    return {"message": "Vehicle rejected successfully"}
+   

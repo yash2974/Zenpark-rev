@@ -6,8 +6,8 @@ interface Approval {
   name: string;
   email: string;
   organization: string;
-  contact: string;
-  registration: string;
+  mobileNumber: string;
+  registrationNumber: string;
 }
 
 
@@ -20,7 +20,7 @@ const [approvals, setApprovals] = React.useState<Approval[]>([]);
 
 const fetchApprovals = async () => {
   try {
-    const response = await fetch("http://192.168.1.6:8001/pending-approvals?page=1&limit=10");
+    const response = await fetch("http://192.168.1.7:8001/pending-approvals?page=1&limit=10");
     const json = await response.json();
     setApprovals(json.approvals);
     setLoading(false);
@@ -32,7 +32,7 @@ const fetchApprovals = async () => {
 
 const handleAccept = (id: string) => async () => {
   try {
-    const response = await fetch(`http://192.168.1.6:8001/approve/${id}`, {
+    const response = await fetch(`http://192.168.1.7:8001/approve/${id}`, {
       method: "POST",
     });
 
@@ -54,7 +54,7 @@ const handleAccept = (id: string) => async () => {
 
 const handleReject = (id: string) => async () => {
   try {
-    const response = await fetch(`http://192.168.1.6:8001/reject/${id}`, {
+    const response = await fetch(`http://192.168.1.7:8001/reject/${id}`, {
       method: "POST",
     });
 
@@ -86,18 +86,19 @@ const handleReject = (id: string) => async () => {
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : approvals.length === 0 ? (
-        <Text>No approvals found.</Text>
+        <Text style={styles.noDataText}>No approvals found</Text>
+
       ) : (
         <FlatList
           data={approvals}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <View style={styles.card}>
-              <Text style={styles.name}>{item.name}</Text>
-              <Text>Email: {item.email}</Text>
-              <Text>Contact: {item.contact}</Text>
-              <Text>Organization: {item.organization}</Text>
-              <Text>Registration: {item.registration}</Text>
+              <Text style={styles.text}>{item.name}</Text>
+              <Text style={styles.text}>Email: {item.email}</Text>
+              <Text style={styles.text}>Contact: {item.mobileNumber}</Text>
+              <Text style={styles.text}>Organization: {item.organization}</Text>
+              <Text style={styles.text}>Registration: {item.registrationNumber}</Text>
   
               <View style={styles.buttonRow}>
                 <TouchableOpacity
@@ -127,43 +128,69 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "#0A0F1F",
   },
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
+    backgroundColor: "#111827",
+    borderRadius: 12,
     padding: 16,
-    marginBottom: 12,
+    marginBottom: 16,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 5,
+    elevation: 4,
   },
   name: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 4,
+    color: "#ffffff",
+    marginBottom: 6,
+  },
+  text: {
+    color: "#CCCCCC",
+    fontSize: 15,
+    marginBottom: 2,
   },
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 12,
+    marginTop: 16,
   },
   acceptButton: {
-    backgroundColor: "#4CAF50",
-    paddingVertical: 8,
+    backgroundColor: "#00B8D4",
+    paddingVertical: 10,
     paddingHorizontal: 16,
-    borderRadius: 8,
+    borderRadius: 10,
+    shadowColor: "#00B8D4",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
   },
   rejectButton: {
     backgroundColor: "#F44336",
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 16,
-    borderRadius: 8,
+    borderRadius: 10,
+    shadowColor: "#F44336",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
   },
   buttonText: {
-    color: "#fff",
+    color: "#ffffff",
+    fontSize: 15,
     fontWeight: "600",
+    textAlign: "center",
   },
+  noDataText: {
+    color: "#ffffff",
+    fontSize: 16,
+    textAlign: "center",
+    marginTop: 20,
+    opacity: 0.8,
+  },
+  
 });

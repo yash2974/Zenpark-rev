@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Button, TouchableOpacity } from 'react-native';
 import { signOut ,getAuth} from 'firebase/auth';
 import { useNavigation } from '@react-navigation/native';
+import { RootTabParamList } from './types'; // adjust the path
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
 
 type UserData = {
@@ -10,7 +12,7 @@ type UserData = {
   phone?: string;
   [key: string]: any; // For any other fields in userData
 };
-
+type NavigationProp = BottomTabNavigationProp<RootTabParamList>;
 const auth = getAuth();
 const handleSignout = async () => {
   try {
@@ -25,7 +27,7 @@ interface ProfileProps {
 }
 
 const Profile: React.FC<ProfileProps> = ({ userData }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
 
   console.log("User data in Profile component:", userData);
   // Show loading indicator while data is being fetched
