@@ -217,3 +217,5 @@ async def reject_vehicle(_id: str):
     
     return {"message": "Vehicle rejected successfully"}
    
+
+

@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Button, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Button, TouchableOpacity,Image } from 'react-native';
 import { signOut ,getAuth} from 'firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import { RootTabParamList } from './types'; // adjust the path
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+
 
 
 type UserData = {
