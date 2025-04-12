@@ -14,7 +14,9 @@ interface PlateData {
   plate: string;
   confidence: number;
   timestamp: string;
+  approved: boolean; // ✅ Add this
 }
+
 
 export default function PlateDetection() {
   const [plates, setPlates] = useState<PlateData[]>([]);
@@ -60,15 +62,21 @@ export default function PlateDetection() {
   const renderItem = ({ item }: { item: PlateData }) => (
     <View style={styles.card}>
       <Text style={styles.label}>License Plate</Text>
-      <Text style={styles.value}>{item.plate}</Text>
-
+      <Text style={[
+        styles.value,
+        { color: item.approved ? '#3B82F6' : '#EF4444' } // 🔵 blue if approved, 🔴 red otherwise
+      ]}>
+        {item.plate}
+      </Text>
+  
       <Text style={styles.label}>Confidence</Text>
       <Text style={styles.value}>{item.confidence.toFixed(2)}</Text>
-
+  
       <Text style={styles.label}>Detected At</Text>
       <Text style={styles.value}>{item.timestamp}</Text>
     </View>
   );
+  
 
   return (
     <SafeAreaView style={styles.container}>

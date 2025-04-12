@@ -101,10 +101,17 @@ async def plate_detection_loop():
 
                         # Save to DB
                         try:
+                            # Check if the plate is in approved_vehichles
+                            cursor.execute("SELECT 1 FROM approved_vehicles WHERE vehicle_number = %s LIMIT 1", (cleaned_text,))
+
+                            approved = cursor.fetchone() is not None
+
+                            # Save to plates table with 'approved' flag
                             cursor.execute(
-                                "INSERT INTO plates (plate, confidence, timestamp) VALUES (%s, %s, %s)", 
-                                (cleaned_text, float(conf), timestamp)
+                                "INSERT INTO plates (plate, confidence, timestamp, approved) VALUES (%s, %s, %s, %s)", 
+                                (cleaned_text, float(conf), timestamp, approved)
                             )
+
                             db.commit()
                             print(f"✅ [Saved to DB] {cleaned_text} at {timestamp.isoformat()}")
                         except mysql.connector.Error as err:
@@ -120,13 +127,14 @@ async def startup_event():
     # Ensure plates table exists
     try:
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS plates (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                plate VARCHAR(20) NOT NULL,
-                confidence FLOAT NOT NULL,
-                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
+        CREATE TABLE IF NOT EXISTS plates (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            plate VARCHAR(20) NOT NULL,
+            confidence FLOAT NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            approved BOOLEAN DEFAULT FALSE
+        )
+    """)
         db.commit()
         
         # Start the detection loop
