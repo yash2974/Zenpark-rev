@@ -66,7 +66,7 @@ export default function PlateDetection() {
         styles.value,
         { color: item.approved ? '#3B82F6' : '#EF4444' } // 🔵 blue if approved, 🔴 red otherwise
       ]}>
-        {item.plate}
+        {item.approved?item.plate:item.plate+" (Not Approved)"}
       </Text>
   
       <Text style={styles.label}>Confidence</Text>
