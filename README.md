@@ -1,78 +1,39 @@
-Zenpark - Smart Parking Management System
-Zenpark is a cutting-edge parking management solution that utilizes AI to streamline parking lot operations. Using advanced technologies like YOLO (You Only Look Once) for object detection and OCR (Optical Character Recognition) for vehicle number plate recognition, Zenpark provides real-time parking management, ensuring a seamless experience for both parking lot owners and vehicle owners.
+# Zenpark - Smart Parking Management System 🚗🅿️
 
-Features
-AI-Powered Number Plate Recognition: Automatically reads and matches vehicle number plates using YOLO and OCR.
+![Zenpark Preview](assets/preview.png)  
+<!-- 🔄 Replace 'assets/preview.png' with the actual path or a hosted image/GIF URL -->
 
-Real-Time Parking Management: Tracks vehicles entering and exiting the parking area.
+Zenpark is an AI-driven parking management system designed to automate vehicle entry and exit logging using real-time number plate recognition. It leverages YOLO (You Only Look Once) and OCR to detect and verify vehicle plates, making parking operations smarter and more efficient.
 
-Seamless Registration & Profile Management: Users can register and manage their profiles efficiently.
+---
 
-WebSocket Integration: Real-time data communication between frontend and backend.
+## 🚀 Features
 
-Efficient Data Storage: Utilizes MongoDB for user data and MySQL for vehicle entry/exit logs.
+- 🔍 **YOLO + OCR**: Real-time vehicle number plate detection and verification.
+- 📲 **React Native App**: User-friendly cross-platform frontend using Expo.
+- ⚡ **FastAPI Backend**: High-performance API with WebSocket support.
+- 👥 **User Management**: Register, fetch, and approve users seamlessly.
+- 🧠 **AI Integration**: Continuous video feed analysis using YOLO + OCR.
+- 🛢 **MongoDB + MySQL**: MongoDB for user profiles, MySQL for vehicle logs.
+- 🔄 **Real-Time Updates**: WebSocket communication for live detection events.
 
-Tech Stack
-Frontend: React Native
+---
 
-Backend: FastAPI
+## 🛠 Tech Stack
 
-AI: YOLO (Object Detection), OCR (Optical Character Recognition)
+| Layer       | Technology                     |
+|-------------|--------------------------------|
+| Frontend    | React Native (Expo)            |
+| Backend     | FastAPI                        |
+| AI/ML       | YOLO (v5+), Tesseract OCR      |
+| Realtime    | WebSocket                      |
+| Database    | MongoDB (users), MySQL (logs)  |
 
-Database: MongoDB (for user profiles), MySQL (for entry/exit logs)
+---
 
-Real-Time Communication: WebSocket
+## 📦 Installation
 
-Installation
-Prerequisites
-Python 3.x
-
-Node.js and npm
-
-MongoDB & MySQL (or Docker for easy setup)
-
-Steps
-Clone the repository:
-
-bash
-Copy
-Edit
+### 1. Clone the Repository
+```bash
 git clone https://github.com/your-username/zenpark.git
 cd zenpark
-Install backend dependencies:
-
-bash
-Copy
-Edit
-cd backend
-pip install -r requirements.txt
-Install frontend dependencies:
-
-bash
-Copy
-Edit
-cd frontend
-npm install
-Start the backend:
-
-bash
-Copy
-Edit
-uvicorn main:app --reload
-Start the frontend:
-
-bash
-Copy
-Edit
-npm start
-Usage
-Register a user profile through the app.
-
-When a vehicle enters the parking lot, the AI system will recognize the vehicle’s number plate in real-time.
-
-The system will log entry/exit times and update the parking lot status accordingly.
-
-View real-time updates on the frontend with WebSocket integration.
-
-Contributing
-Contributions are welcome! Please fork the repository, create a new branch, and submit a pull request with your changes.
