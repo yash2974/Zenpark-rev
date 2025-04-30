@@ -1,6 +1,6 @@
 # Zenpark - Smart Parking Management System 🚗🅿️
 
-![Zenpark Preview](assets/preview.png)  
+![Zenpark Preview](assests/preview.png)  
 <!-- 🔄 Replace 'assets/preview.png' with the actual path or a hosted image/GIF URL -->
 
 Zenpark is an AI-driven parking management system designed to automate vehicle entry and exit logging using real-time number plate recognition. It leverages YOLO (You Only Look Once) and OCR to detect and verify vehicle plates, making parking operations smarter and more efficient.
